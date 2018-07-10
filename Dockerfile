@@ -13,8 +13,6 @@ ARG MAKEFLAGS=""
 ENV ZNC_VERSION 1.7.0
 
 RUN set -x \
-    && adduser -S znc \
-    && addgroup -S znc \
     && apk add --no-cache --virtual runtime-dependencies \
         boost \
         ca-certificates \
@@ -47,12 +45,12 @@ RUN set -x \
     && cmake .. ${CMAKEFLAGS} \
     && make $MAKEFLAGS \
     && make install \
-    && apk del build-dependencies \
     && cd / && rm -rf /znc-src
 
 COPY entrypoint.sh /
 COPY 00-try-sh.sh /startup-sequence/
 COPY 01-options.sh /startup-sequence/
+COPY 30-build-modules.sh /startup-sequence/
 COPY 50-chown.sh /startup-sequence/
 COPY 99-launch.sh /startup-sequence/
 
